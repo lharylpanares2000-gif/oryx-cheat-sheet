@@ -78,52 +78,56 @@
   /* ---------- Hub layout ---------- */
   .hub-body{display:flex;align-items:flex-start;}
 
-  /* ---------- Platform sidebar (dark, dot + pill + badge) ---------- */
+  /* ---------- Platform sidebar (Oryx blue, icon + pill + badge) ---------- */
   .platform-sidebar{
     width:250px;flex-shrink:0;padding:24px 16px;position:sticky;top:0;
-    height:100vh;overflow-y:auto;background:#0B1622;
+    height:100vh;overflow-y:auto;background:var(--oryx-blue);
   }
   .platform-label{
     font-family:var(--font-display);font-weight:600;font-size:10.5px;letter-spacing:0.16em;
-    text-transform:uppercase;color:#5E7480;margin:0 6px 14px;
+    text-transform:uppercase;color:rgba(255,255,255,0.5);margin:0 6px 14px;
   }
   .platform-nav{display:flex;flex-direction:column;gap:8px;}
   .platform-item{
     display:flex;align-items:center;justify-content:space-between;gap:10px;
     padding:14px 16px;border:1px solid transparent;border-radius:14px;background:none;
     cursor:pointer;text-align:left;font-family:var(--font-display);font-weight:600;
-    font-size:14px;color:#9FB4BE;transition:background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+    font-size:14px;color:rgba(255,255,255,0.82);transition:background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
   }
-  .platform-item:hover:not(.disabled){background:rgba(255,255,255,0.04);}
-  .platform-item.active{background:rgba(255,255,255,0.06);border-color:rgba(255,255,255,0.14);color:var(--white);}
-  .platform-item.disabled{cursor:not-allowed;opacity:0.45;}
+  .platform-item:hover:not(.disabled){background:rgba(255,255,255,0.06);color:var(--white);}
+  .platform-item.active{background:rgba(255,255,255,0.1);border-color:rgba(255,255,255,0.18);color:var(--white);}
+  .platform-item.disabled{cursor:not-allowed;opacity:0.5;}
   .platform-item-label{display:flex;align-items:center;gap:12px;}
+  .platform-icon{width:18px;height:18px;flex-shrink:0;display:block;}
+  .platform-icon svg{width:18px;height:18px;display:block;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round;}
   .platform-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
   .platform-badge{
-    font-family:var(--font-body);font-weight:600;font-size:12px;background:rgba(255,255,255,0.08);
-    color:#C9D6DB;padding:3px 11px;border-radius:12px;min-width:22px;text-align:center;
+    font-family:var(--font-body);font-weight:600;font-size:12px;background:rgba(255,255,255,0.12);
+    color:var(--white);padding:3px 11px;border-radius:12px;min-width:22px;text-align:center;
   }
-  .platform-item.active .platform-badge{background:rgba(255,255,255,0.2);color:var(--white);}
+  .platform-item.active .platform-badge{background:rgba(255,255,255,0.25);color:var(--white);}
 
-  /* ---------- Category tab bar (dark, dot + badge) ---------- */
+  /* ---------- Category tab bar (Oryx blue, icon + badge) ---------- */
   .cat-tabbar{
     display:flex;flex-wrap:nowrap;overflow-x:auto;gap:6px;
-    background:#0B2531;border-radius:14px;padding:8px;margin-bottom:20px;
+    background:var(--oryx-blue);border-radius:14px;padding:8px;margin-bottom:20px;
   }
   .cat-tab{
     display:flex;align-items:center;gap:9px;flex-shrink:0;cursor:pointer;
     padding:10px 16px;border:1px solid transparent;border-radius:10px;background:none;
-    font-family:var(--font-display);font-weight:600;font-size:13px;color:#9FB4BE;
+    font-family:var(--font-display);font-weight:600;font-size:13px;color:rgba(255,255,255,0.72);
     transition:background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
   }
   .cat-tab:hover{color:var(--white);}
-  .cat-tab.active{background:rgba(255,255,255,0.06);border-color:rgba(255,255,255,0.16);color:var(--white);}
+  .cat-tab.active{background:rgba(255,255,255,0.1);border-color:rgba(255,255,255,0.2);color:var(--white);}
+  .cat-icon{width:16px;height:16px;flex-shrink:0;display:block;}
+  .cat-icon svg{width:16px;height:16px;display:block;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round;}
   .cat-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0;}
   .cat-badge{
-    font-family:var(--font-body);font-weight:600;font-size:11px;background:rgba(255,255,255,0.1);
-    color:#C9D6DB;padding:2px 9px;border-radius:10px;min-width:20px;text-align:center;
+    font-family:var(--font-body);font-weight:600;font-size:11px;background:rgba(255,255,255,0.14);
+    color:var(--white);padding:2px 9px;border-radius:10px;min-width:20px;text-align:center;
   }
-  .cat-tab.active .cat-badge{background:rgba(255,255,255,0.22);color:var(--white);}
+  .cat-tab.active .cat-badge{background:rgba(255,255,255,0.26);color:var(--white);}
 
   .hub-main{flex:1;min-width:0;padding:24px 32px 64px;}
 
@@ -440,19 +444,19 @@
       <div class="platform-label">AI Engines &amp; Environments</div>
       <nav class="platform-nav" id="platformNav">
         <button class="platform-item active" data-platform="all">
-          <span class="platform-item-label"><span class="platform-dot" style="background:#60A5FA"></span>All Platforms</span>
+          <span class="platform-item-label"><span class="platform-icon"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg></span>All Platforms</span>
           <span class="platform-badge" data-platform-count="all">0</span>
         </button>
         <button class="platform-item" data-platform="claude">
-          <span class="platform-item-label"><span class="platform-dot" style="background:#F5A623"></span>Claude Hub</span>
+          <span class="platform-item-label"><span class="platform-icon"><svg viewBox="0 0 24 24"><path d="M12 2v5M12 17v5M2 12h5M17 12h5M4.9 4.9l3.6 3.6M15.5 15.5l3.6 3.6M19.1 4.9l-3.6 3.6M8.5 15.5l-3.6 3.6"/></svg></span>Claude Hub</span>
           <span class="platform-badge" data-platform-count="claude">0</span>
         </button>
         <button class="platform-item" data-platform="chatgpt">
-          <span class="platform-item-label"><span class="platform-dot" style="background:#34D399"></span>ChatGPT Engine</span>
+          <span class="platform-item-label"><span class="platform-icon"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H8l-5 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></span>ChatGPT Engine</span>
           <span class="platform-badge" data-platform-count="chatgpt">0</span>
         </button>
         <button class="platform-item disabled" data-platform="other" disabled title="Coming soon">
-          <span class="platform-item-label"><span class="platform-dot" style="background:#A78BFA"></span>Other AI Tools</span>
+          <span class="platform-item-label"><span class="platform-icon"><svg viewBox="0 0 24 24"><path d="M12 3l2.1 4.9L19 10l-4.9 2.1L12 17l-2.1-4.9L5 10l4.9-2.1z"/><path d="M18 15l.9 2.1L21 18l-2.1.9L18 21l-.9-2.1L15 18l2.1-.9z"/></svg></span>Other AI Tools</span>
           <span class="platform-badge" data-platform-count="other">0</span>
         </button>
       </nav>
@@ -460,13 +464,13 @@
 
     <main class="hub-main">
       <nav class="cat-tabbar" id="sideNav">
-        <button class="cat-tab active" data-cat="all"><span class="cat-dot" style="background:#60A5FA"></span>All Entries<span class="cat-badge" data-count-for="all">0</span></button>
-        <button class="cat-tab" data-cat="skills"><span class="cat-dot" style="background:#A78BFA"></span>Skills<span class="cat-badge" data-count-for="skills">0</span></button>
-        <button class="cat-tab" data-cat="commands"><span class="cat-dot" style="background:#F5A623"></span>Commands<span class="cat-badge" data-count-for="commands">0</span></button>
-        <button class="cat-tab" data-cat="agents"><span class="cat-dot" style="background:#34D399"></span>AI Agents<span class="cat-badge" data-count-for="agents">0</span></button>
-        <button class="cat-tab" data-cat="mcps"><span class="cat-dot" style="background:#F87171"></span>MCPs<span class="cat-badge" data-count-for="mcps">0</span></button>
-        <button class="cat-tab" data-cat="plugins"><span class="cat-dot" style="background:#F5C451"></span>Plugins<span class="cat-badge" data-count-for="plugins">0</span></button>
-        <button class="cat-tab" data-cat="discoveries"><span class="cat-dot" style="background:#38BDF8"></span>Discoveries<span class="cat-badge" data-count-for="discoveries">0</span></button>
+        <button class="cat-tab active" data-cat="all"><span class="cat-icon"><svg viewBox="0 0 24 24"><path d="M12 2 2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5M2 12l10 5 10-5"/></svg></span>All Entries<span class="cat-badge" data-count-for="all">0</span></button>
+        <button class="cat-tab" data-cat="skills"><span class="cat-icon"><svg viewBox="0 0 24 24"><path d="M12 2l2.4 6.9L21 11l-6.6 2.1L12 20l-2.4-6.9L3 11l6.6-2.1z"/></svg></span>Skills<span class="cat-badge" data-count-for="skills">0</span></button>
+        <button class="cat-tab" data-cat="commands"><span class="cat-icon"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M7 9l3 3-3 3M13 15h4"/></svg></span>Commands<span class="cat-badge" data-count-for="commands">0</span></button>
+        <button class="cat-tab" data-cat="agents"><span class="cat-icon"><svg viewBox="0 0 24 24"><rect x="4" y="8" width="16" height="12" rx="2"/><path d="M12 8V4M9 4h6"/><circle cx="9" cy="14" r="1"/><circle cx="15" cy="14" r="1"/></svg></span>AI Agents<span class="cat-badge" data-count-for="agents">0</span></button>
+        <button class="cat-tab" data-cat="mcps"><span class="cat-icon"><svg viewBox="0 0 24 24"><path d="M9 2v6M15 2v6M6 8h12v3a6 6 0 0 1-12 0zM12 17v5"/></svg></span>MCPs<span class="cat-badge" data-count-for="mcps">0</span></button>
+        <button class="cat-tab" data-cat="plugins"><span class="cat-icon"><svg viewBox="0 0 24 24"><path d="M20.5 11H19V7a2 2 0 0 0-2-2h-4V3.5a2.5 2.5 0 0 0-5 0V5H4a2 2 0 0 0-2 2v3.8h1.5a2.7 2.7 0 0 1 0 5.4H2V20a2 2 0 0 0 2 2h3.8v-1.5a2.7 2.7 0 0 1 5.4 0V22H17a2 2 0 0 0 2-2v-4h1.5a2.5 2.5 0 0 0 0-5z"/></svg></span>Plugins<span class="cat-badge" data-count-for="plugins">0</span></button>
+        <button class="cat-tab" data-cat="discoveries"><span class="cat-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M15.5 8.5l-2 5-5 2 2-5z"/></svg></span>Discoveries<span class="cat-badge" data-count-for="discoveries">0</span></button>
       </nav>
 
       <div class="controls">
