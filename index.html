@@ -590,6 +590,10 @@
     </div>
 
     <div id="requestFields" style="display:none;">
+      <label for="sTitle">Title</label>
+      <input type="text" id="sTitle" placeholder="e.g. Showroom follow-up email drafter">
+      <div class="field-error" id="errSTitle">Give it a title.</div>
+
       <label for="sText">What do you need?</label>
       <textarea id="sText" placeholder="Describe it in a sentence. e.g. 'A ChatGPT prompt that drafts showroom follow-up emails.'"></textarea>
       <div class="field-error" id="errSText">Describe what you need.</div>
@@ -601,6 +605,12 @@
         <option value="AI agent">AI agent</option>
         <option value="MCP">MCP</option>
         <option value="Plugin">Plugin</option>
+      </select>
+
+      <label for="sPlatform">AI platform</label>
+      <select id="sPlatform">
+        <option value="claude">Claude</option>
+        <option value="chatgpt">ChatGPT</option>
       </select>
 
       <label for="sName">Your name</label>
@@ -1290,9 +1300,11 @@ function closeSuggestPanel(){
   document.getElementById('dTitle').value = '';
   document.getElementById('dDesc').value = '';
   document.getElementById('dLink').value = '';
+  document.getElementById('sTitle').value = '';
   document.getElementById('sText').value = '';
   document.getElementById('sType').value = 'Skill';
-  ['errDTitle','errDDesc','errDLink','errSText','errSName'].forEach(id => {
+  document.getElementById('sPlatform').value = 'claude';
+  ['errDTitle','errDDesc','errDLink','errSTitle','errSText','errSName'].forEach(id => {
     document.getElementById(id).style.display = 'none';
   });
 }
@@ -1328,11 +1340,14 @@ async function submitDiscovery(){
 }
 
 async function submitRequest(){
+  const title = document.getElementById('sTitle').value.trim();
   const text = document.getElementById('sText').value.trim();
   const type = document.getElementById('sType').value;
+  const platform = document.getElementById('sPlatform').value;
   const name = document.getElementById('sName').value.trim();
 
   let ok = true;
+  if(!title){ document.getElementById('errSTitle').style.display = 'block'; ok = false; } else document.getElementById('errSTitle').style.display = 'none';
   if(!text){ document.getElementById('errSText').style.display = 'block'; ok = false; } else document.getElementById('errSText').style.display = 'none';
   if(!name){ document.getElementById('errSName').style.display = 'block'; ok = false; } else document.getElementById('errSName').style.display = 'none';
   if(!ok) return;
@@ -1340,7 +1355,7 @@ async function submitRequest(){
   saveSuggestBtn.disabled = true; saveSuggestBtn.textContent = 'Sending…';
   try{
     await suggestionsCollection.add({
-      text, type, name, status: 'pending', createdAt: Date.now()
+      title, text, type, platform, name, status: 'pending', createdAt: Date.now()
     });
     try{ localStorage.setItem(AUTHOR_KEY, name); }catch(e){}
     closeSuggestPanel();
@@ -1377,9 +1392,11 @@ function renderReviewList(){
   reviewList.innerHTML = suggestions.map(s => {
     const dateStr = new Date(s.createdAt).toLocaleDateString(undefined, {month:'short', day:'numeric'});
     const typeStr = s.type ? escapeHtml(s.type) : 'Not sure';
+    const platformStr = s.platform === 'chatgpt' ? 'ChatGPT' : 'Claude';
     return `
       <div class="suggestion-item" data-id="${s.id}">
-        <div class="s-meta"><span>${typeStr}</span><span>${escapeHtml(s.name || 'Anonymous')} · ${dateStr}</span></div>
+        <div class="s-meta"><span>${typeStr} · ${platformStr}</span><span>${escapeHtml(s.name || 'Anonymous')} · ${dateStr}</span></div>
+        ${s.title ? `<p class="s-title" style="font-weight:600;margin:0 0 6px;">${escapeHtml(s.title)}</p>` : ''}
         <p class="s-text">${escapeHtml(s.text)}</p>
         <div class="s-actions">
           <button class="btn-small solid s-create" data-id="${s.id}">Create entry</button>
@@ -1409,6 +1426,8 @@ function createEntryFromSuggestion(s){
   openOverlay();
   // Pre-load the AI helper with the suggestion so the admin can generate the fields.
   aiInput.value = s.text || '';
+  if(s.title) document.getElementById('fTitle').value = s.title;
+  if(s.platform) document.getElementById('fPlatform').value = s.platform;
   // If the suggestion is a link, drop it into the Link field too.
   if(isValidLink((s.text || '').trim())) document.getElementById('fLink').value = s.text.trim();
   currentSuggestionId = s.id;
