@@ -413,7 +413,7 @@
     <div class="header-actions">
       <span class="stat-pill">Total Entries: <strong id="totalCount">0</strong></span>
       <span class="sync-status" id="syncStatus">Connecting…</span>
-      <button class="add-btn" id="openSuggest">+ Suggest</button>
+      <button class="add-btn" id="openSuggest">+ Suggest a Resource</button>
       <button class="btn-outline" id="openReview" style="display:none;">Review <span class="review-count" id="reviewCount">0</span></button>
       <button class="add-btn" id="openAdd" style="display:none;">+ Add Entry</button>
       <button class="admin-link" id="adminToggle">Admin</button>
@@ -566,30 +566,51 @@
 <div class="overlay" id="suggestOverlay">
   <div class="panel">
     <button class="close-x" id="closeSuggest">&times;</button>
-    <h2>Suggest a resource</h2>
-    <p class="sub">Spotted a useful skill, command, agent, MCP, plugin, or tip? Drop it here — the admin will research it and publish a polished version.</p>
+    <h2>Suggest a Resource</h2>
+    <p class="sub" id="suggestSub">Found something useful, or want a new skill built? Choose which below.</p>
 
-    <label for="sText">What is it?</label>
-    <textarea id="sText" placeholder="Paste a link, or describe it in a sentence. e.g. 'A ChatGPT prompt that drafts showroom follow-up emails' or a YouTube/GitHub link."></textarea>
-    <div class="field-error" id="errSText">Add a link or a short description.</div>
-
-    <label for="sType">Type <span class="optional-tag">(optional)</span></label>
-    <select id="sType">
-      <option value="">Not sure</option>
-      <option value="Skill">Skill</option>
-      <option value="Command">Command</option>
-      <option value="AI agent">AI agent</option>
-      <option value="MCP">MCP</option>
-      <option value="Plugin">Plugin</option>
-      <option value="Discovery">Discovery</option>
+    <label for="sMode">What would you like to do?</label>
+    <select id="sMode">
+      <option value="discovery">Discovery</option>
+      <option value="request">Suggest</option>
     </select>
 
-    <label for="sName">Your name <span class="optional-tag">(so we can credit you)</span></label>
-    <input type="text" id="sName" placeholder="e.g. Sara">
+    <div id="discoveryFields">
+      <label for="dTitle">Resource title</label>
+      <input type="text" id="dTitle" placeholder="e.g. the title of the video or article">
+      <div class="field-error" id="errDTitle">Give it a title.</div>
+
+      <label for="dDesc">Short description</label>
+      <textarea id="dDesc" placeholder="A sentence on why it's useful"></textarea>
+      <div class="field-error" id="errDDesc">Add a short description.</div>
+
+      <label for="dLink">Resource link</label>
+      <input type="text" id="dLink" placeholder="https://…">
+      <div class="field-error" id="errDLink">Add the link.</div>
+    </div>
+
+    <div id="requestFields" style="display:none;">
+      <label for="sText">What do you need?</label>
+      <textarea id="sText" placeholder="Describe it in a sentence. e.g. 'A ChatGPT prompt that drafts showroom follow-up emails.'"></textarea>
+      <div class="field-error" id="errSText">Describe what you need.</div>
+
+      <label for="sType">Type</label>
+      <select id="sType">
+        <option value="Skill">Skill</option>
+        <option value="Command">Command</option>
+        <option value="AI agent">AI agent</option>
+        <option value="MCP">MCP</option>
+        <option value="Plugin">Plugin</option>
+      </select>
+
+      <label for="sName">Your name</label>
+      <input type="text" id="sName" placeholder="e.g. Sara">
+      <div class="field-error" id="errSName">Add your name so we can credit you.</div>
+    </div>
 
     <div class="panel-actions">
       <button class="btn-ghost" id="cancelSuggest">Cancel</button>
-      <button class="btn-primary" id="saveSuggest">Send suggestion</button>
+      <button class="btn-primary" id="saveSuggest">Publish discovery</button>
     </div>
   </div>
 </div>
@@ -1239,44 +1260,101 @@ adminToggle.addEventListener('click', () => {
 });
 
 // ---- Suggest flow (any team member) ----
+const sMode = document.getElementById('sMode');
+const discoveryFields = document.getElementById('discoveryFields');
+const requestFields = document.getElementById('requestFields');
+const suggestSub = document.getElementById('suggestSub');
+const saveSuggestBtn = document.getElementById('saveSuggest');
+
+function updateSuggestMode(){
+  const isDiscovery = sMode.value === 'discovery';
+  discoveryFields.style.display = isDiscovery ? '' : 'none';
+  requestFields.style.display = isDiscovery ? 'none' : '';
+  suggestSub.textContent = isDiscovery
+    ? 'Share a useful link — it publishes to Discoveries right away, no approval needed.'
+    : 'Describe what you need — the admin will build it, test it, and publish it.';
+  saveSuggestBtn.textContent = isDiscovery ? 'Publish discovery' : 'Send request';
+}
+sMode.addEventListener('change', updateSuggestMode);
+
 function openSuggestPanel(){
   suggestOverlay.classList.add('open');
+  sMode.value = 'discovery';
+  updateSuggestMode();
   let savedName = '';
   try{ savedName = localStorage.getItem(AUTHOR_KEY) || ''; }catch(e){}
   document.getElementById('sName').value = savedName;
 }
 function closeSuggestPanel(){
   suggestOverlay.classList.remove('open');
+  document.getElementById('dTitle').value = '';
+  document.getElementById('dDesc').value = '';
+  document.getElementById('dLink').value = '';
   document.getElementById('sText').value = '';
-  document.getElementById('sType').value = '';
-  document.getElementById('errSText').style.display = 'none';
+  document.getElementById('sType').value = 'Skill';
+  ['errDTitle','errDDesc','errDLink','errSText','errSName'].forEach(id => {
+    document.getElementById(id).style.display = 'none';
+  });
 }
 openSuggest.addEventListener('click', openSuggestPanel);
 document.getElementById('closeSuggest').addEventListener('click', closeSuggestPanel);
 document.getElementById('cancelSuggest').addEventListener('click', closeSuggestPanel);
 suggestOverlay.addEventListener('click', (ev) => { if(ev.target === suggestOverlay) closeSuggestPanel(); });
 
-document.getElementById('saveSuggest').addEventListener('click', async () => {
+async function submitDiscovery(){
+  const title = document.getElementById('dTitle').value.trim();
+  const desc = document.getElementById('dDesc').value.trim();
+  const link = document.getElementById('dLink').value.trim();
+
+  let ok = true;
+  if(!title){ document.getElementById('errDTitle').style.display = 'block'; ok = false; } else document.getElementById('errDTitle').style.display = 'none';
+  if(!desc){ document.getElementById('errDDesc').style.display = 'block'; ok = false; } else document.getElementById('errDDesc').style.display = 'none';
+  if(!link){ document.getElementById('errDLink').style.display = 'block'; ok = false; } else document.getElementById('errDLink').style.display = 'none';
+  if(!ok) return;
+
+  saveSuggestBtn.disabled = true; saveSuggestBtn.textContent = 'Publishing…';
+  try{
+    await entriesCollection.add({
+      category: 'discoveries', title, body: desc, link,
+      platform: 'claude', author: 'Anonymous', createdAt: Date.now()
+    });
+    closeSuggestPanel();
+    alert('Published! Your discovery is live in the Discoveries section.');
+  }catch(e){
+    alert('Could not publish that discovery. Check your connection and try again.');
+  }finally{
+    saveSuggestBtn.disabled = false; updateSuggestMode();
+  }
+}
+
+async function submitRequest(){
   const text = document.getElementById('sText').value.trim();
   const type = document.getElementById('sType').value;
   const name = document.getElementById('sName').value.trim();
-  if(!text){ document.getElementById('errSText').style.display = 'block'; return; }
-  document.getElementById('errSText').style.display = 'none';
 
-  const btn = document.getElementById('saveSuggest');
-  btn.disabled = true; btn.textContent = 'Sending…';
+  let ok = true;
+  if(!text){ document.getElementById('errSText').style.display = 'block'; ok = false; } else document.getElementById('errSText').style.display = 'none';
+  if(!name){ document.getElementById('errSName').style.display = 'block'; ok = false; } else document.getElementById('errSName').style.display = 'none';
+  if(!ok) return;
+
+  saveSuggestBtn.disabled = true; saveSuggestBtn.textContent = 'Sending…';
   try{
     await suggestionsCollection.add({
-      text, type, name: name || 'Anonymous', status: 'pending', createdAt: Date.now()
+      text, type, name, status: 'pending', createdAt: Date.now()
     });
-    if(name){ try{ localStorage.setItem(AUTHOR_KEY, name); }catch(e){} }
+    try{ localStorage.setItem(AUTHOR_KEY, name); }catch(e){}
     closeSuggestPanel();
-    alert('Thanks! Your suggestion has been sent to the admin.');
+    alert('Thanks! Your request has been sent to the admin.');
   }catch(e){
-    alert('Could not send that suggestion. Check your connection and try again.');
+    alert('Could not send that request. Check your connection and try again.');
   }finally{
-    btn.disabled = false; btn.textContent = 'Send suggestion';
+    saveSuggestBtn.disabled = false; updateSuggestMode();
   }
+}
+
+saveSuggestBtn.addEventListener('click', () => {
+  if(sMode.value === 'discovery') submitDiscovery();
+  else submitRequest();
 });
 
 // ---- Review queue (admin) ----
