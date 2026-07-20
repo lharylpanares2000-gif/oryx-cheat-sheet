@@ -241,6 +241,15 @@
     padding-bottom:14px;border-bottom:1px solid var(--line);
   }
   .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:20px;}
+  .pagination{display:flex;align-items:center;justify-content:center;gap:14px;margin-top:28px;}
+  .pagination-btn{
+    font-family:var(--font-display);font-weight:600;font-size:12px;letter-spacing:0.06em;text-transform:uppercase;
+    border:1px solid var(--line);background:var(--white);color:var(--oryx-blue);border-radius:8px;
+    padding:9px 16px;cursor:pointer;
+  }
+  .pagination-btn:hover:not(:disabled){background:var(--panel);}
+  .pagination-btn:disabled{opacity:0.4;cursor:not-allowed;}
+  .pagination-status{font-size:12.5px;color:var(--silver);font-family:var(--font-display);font-weight:500;}
   .card{
     position:relative;background:var(--white);border:1px solid var(--line);padding:20px;
     display:flex;flex-direction:column;gap:10px;transition:border-color 0.15s ease;cursor:pointer;
@@ -531,6 +540,7 @@
 
       <div class="count-row" id="countRow">Loading entries…</div>
       <div class="grid" id="grid"></div>
+      <div class="pagination" id="pagination"></div>
     </main>
   </div>
 </div>
@@ -887,8 +897,11 @@ let activePlatform = 'all';
 let searchTerm = '';
 let activeDepartment = 'all';
 let activeTag = 'all';
+let currentPage = 1;
+const PAGE_SIZE = 8;
 
 const grid = document.getElementById('grid');
+const pagination = document.getElementById('pagination');
 const countRow = document.getElementById('countRow');
 const sideNav = document.getElementById('sideNav');
 const platformNav = document.getElementById('platformNav');
@@ -900,11 +913,13 @@ const tagPillRow = document.getElementById('tagPillRow');
 
 searchInput.addEventListener('input', () => {
   searchTerm = searchInput.value.trim().toLowerCase();
+  currentPage = 1;
   render();
 });
 
 departmentSelect.addEventListener('change', () => {
   activeDepartment = departmentSelect.value;
+  currentPage = 1;
   render();
 });
 
@@ -918,6 +933,7 @@ tagPillRow.addEventListener('click', (ev) => {
   if(!btn) return;
   activeTag = activeTag === btn.dataset.tag ? 'all' : btn.dataset.tag;
   tagPillRow.querySelectorAll('.tag-pill').forEach(p => p.classList.toggle('active', p.dataset.tag === activeTag));
+  currentPage = 1;
   render();
 });
 
@@ -1038,10 +1054,30 @@ function render(){
 
   if(filtered.length === 0){
     grid.innerHTML = '<div class="empty">No entries here yet. Be the first to add one.</div>';
+    pagination.innerHTML = '';
     return;
   }
 
-  grid.innerHTML = filtered.map(e => {
+  const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
+  if(currentPage > totalPages) currentPage = totalPages;
+  if(currentPage < 1) currentPage = 1;
+  const pageItems = filtered.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE);
+
+  if(totalPages <= 1){
+    pagination.innerHTML = '';
+  }else{
+    pagination.innerHTML = `
+      <button class="pagination-btn" id="pagePrev" ${currentPage === 1 ? 'disabled' : ''}>Previous</button>
+      <span class="pagination-status">Page ${currentPage} of ${totalPages}</span>
+      <button class="pagination-btn" id="pageNext" ${currentPage === totalPages ? 'disabled' : ''}>Next</button>
+    `;
+    const prevBtn = document.getElementById('pagePrev');
+    const nextBtn = document.getElementById('pageNext');
+    if(prevBtn) prevBtn.addEventListener('click', () => { currentPage--; render(); });
+    if(nextBtn) nextBtn.addEventListener('click', () => { currentPage++; render(); });
+  }
+
+  grid.innerHTML = pageItems.map(e => {
     const thumbHtml = e.link ? linkThumbHtml(e.link) : cardPlaceholderHtml(e.category);
     const linkHtml = e.link ? `<div class="card-link"><a href="${escapeHtml(e.link)}" target="_blank" rel="noopener">${escapeHtml(e.link)}</a></div>` : '';
     const dateStr = new Date(e.createdAt).toLocaleDateString(undefined, {month:'short', day:'numeric'});
@@ -1168,6 +1204,7 @@ platformNav.addEventListener('click', (ev) => {
     activeCat = 'all';
     sideNav.querySelectorAll('.cat-tab').forEach(t => t.classList.remove('active'));
   }
+  currentPage = 1;
   render();
 });
 
@@ -1177,6 +1214,7 @@ sideNav.addEventListener('click', (ev) => {
   sideNav.querySelectorAll('.cat-tab').forEach(t => t.classList.remove('active'));
   btn.classList.add('active');
   activeCat = btn.dataset.cat;
+  currentPage = 1;
   render();
 });
 
