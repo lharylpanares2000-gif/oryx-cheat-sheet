@@ -182,22 +182,6 @@
   .download-btn:hover{background:var(--oryx-blue-tint);}
   .download-btn svg{width:18px;height:18px;fill:var(--white);}
 
-  /* ---------- Controls ---------- */
-  .controls{
-    padding:0 0 20px;
-    display:flex;
-    flex-wrap:wrap;
-    gap:14px;
-    align-items:center;
-  }
-  .search-wrap{flex:1;min-width:220px;position:relative;}
-  .search-wrap input{
-    width:100%;padding:12px 14px 12px 38px;border:1px solid var(--line);
-    background:var(--panel);font-family:var(--font-body);font-size:14px;color:var(--black);
-  }
-  .search-wrap input:focus{outline:none;border-color:var(--oryx-blue);}
-  .search-icon{position:absolute;left:12px;top:50%;transform:translateY(-50%);width:16px;height:16px;color:var(--silver);}
-
   /* ---------- Grid ---------- */
   .count-row{
     font-size:12px;letter-spacing:0.08em;text-transform:uppercase;color:var(--silver);
@@ -473,12 +457,6 @@
         <button class="cat-tab" data-cat="discoveries"><span class="cat-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M15.5 8.5l-2 5-5 2 2-5z"/></svg></span>Discoveries<span class="cat-badge" data-count-for="discoveries">0</span></button>
       </nav>
 
-      <div class="controls">
-        <div class="search-wrap">
-          <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-          <input type="text" id="searchInput" placeholder="Search the knowledge base…">
-        </div>
-      </div>
       <div class="count-row" id="countRow">Loading entries…</div>
       <div class="grid" id="grid"></div>
     </main>
@@ -756,7 +734,6 @@ function isRichCategory(cat){ return RICH_CATEGORIES.includes(cat); }
 let entries = [];
 let activeCat = 'all';
 let activePlatform = 'all';
-let searchTerm = '';
 
 const grid = document.getElementById('grid');
 const countRow = document.getElementById('countRow');
@@ -834,14 +811,11 @@ function hydrateTikTokThumbs(root){
 }
 
 function render(){
-  const term = searchTerm.trim().toLowerCase();
   const filtered = entries.filter(e => {
     const catMatch = activeCat === 'all' || e.category === activeCat;
     if(!catMatch) return false;
     const platformMatch = activePlatform === 'all' || (e.platform || 'claude') === activePlatform;
-    if(!platformMatch) return false;
-    if(!term) return true;
-    return (e.title + ' ' + e.body + ' ' + (e.author||'')).toLowerCase().includes(term);
+    return platformMatch;
   }).sort((a,b) => b.createdAt - a.createdAt);
 
   countRow.textContent = filtered.length + (filtered.length === 1 ? ' entry' : ' entries');
@@ -999,11 +973,6 @@ sideNav.addEventListener('click', (ev) => {
   sideNav.querySelectorAll('.cat-tab').forEach(t => t.classList.remove('active'));
   btn.classList.add('active');
   activeCat = btn.dataset.cat;
-  render();
-});
-
-document.getElementById('searchInput').addEventListener('input', (ev) => {
-  searchTerm = ev.target.value;
   render();
 });
 
