@@ -130,6 +130,13 @@
   .platform-submenu-empty{padding:10px 14px;font-family:var(--font-body);font-size:13px;color:rgba(255,255,255,0.35);font-style:italic;}
 
   .shortcuts-banner{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px;}
+  .shortcuts-banner-right{display:flex;align-items:center;gap:16px;}
+  .shortcuts-create-btn{
+    font-family:var(--font-display);font-weight:600;font-size:12px;letter-spacing:0.05em;
+    text-transform:uppercase;background:var(--oryx-blue);color:var(--white);border:none;border-radius:8px;
+    padding:8px 16px;cursor:pointer;transition:background 0.15s ease;
+  }
+  .shortcuts-create-btn:hover{background:var(--oryx-blue-tint);}
   .shortcuts-back-btn{display:flex;align-items:center;gap:8px;border:none;background:none;cursor:pointer;
     font-family:var(--font-display);font-weight:600;font-size:13px;color:var(--oryx-blue);padding:6px 0;}
   .shortcuts-back-btn:hover{text-decoration:underline;}
@@ -533,7 +540,10 @@
     <main class="hub-main">
       <div class="shortcuts-banner" id="shortcutsBanner" style="display:none;">
         <button class="shortcuts-back-btn" id="exitShortcuts"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M15 18l-6-6 6-6"/></svg> Back to Library</button>
-        <span class="shortcuts-banner-label">Claude Shortcuts</span>
+        <div class="shortcuts-banner-right">
+          <button class="shortcuts-create-btn" id="openAddShortcut" style="display:none;">+ Create</button>
+          <span class="shortcuts-banner-label">Claude Shortcuts</span>
+        </div>
       </div>
       <nav class="cat-tabbar" id="shortcutNav" style="display:none;">
         <button class="cat-tab active" data-cat="shortcut-desktop">Claude Desktop<span class="cat-badge" data-count-for="shortcut-desktop">0</span></button>
@@ -674,6 +684,51 @@
     <div class="panel-actions">
       <button class="btn-ghost" id="cancelAdd">Cancel</button>
       <button class="btn-primary" id="saveAdd">Save entry</button>
+    </div>
+  </div>
+</div>
+
+<!-- Add a Claude shortcut (admin, from within the Claude Shortcuts view) -->
+<div class="overlay" id="shortcutOverlay">
+  <div class="panel">
+    <button class="close-x" id="closeShortcutPanel">&times;</button>
+    <h2>Add a Claude shortcut</h2>
+    <p class="sub">Visible to the whole team</p>
+
+    <label for="scCategory">Type</label>
+    <select id="scCategory">
+      <option value="shortcut-desktop">Claude Desktop</option>
+      <option value="shortcut-code">Claude Code</option>
+      <option value="shortcut-slash">Slash Command</option>
+    </select>
+
+    <label for="scTitle">Label</label>
+    <input type="text" id="scTitle" placeholder="e.g. Compact Context">
+    <div class="field-error" id="errScTitle">Give it a label.</div>
+
+    <label for="scKey">Shortcut / Command</label>
+    <input type="text" id="scKey" placeholder="e.g. /compact or Shift + Tab">
+    <div class="field-error" id="errScKey">Add the shortcut or command.</div>
+
+    <label for="scPurpose">Purpose</label>
+    <textarea id="scPurpose" placeholder="What does it do?"></textarea>
+    <div class="field-error" id="errScPurpose">Add a purpose.</div>
+
+    <label for="scHowToUse">How to use it <span class="optional-tag">(optional)</span></label>
+    <textarea id="scHowToUse" placeholder="Steps to trigger it"></textarea>
+
+    <label for="scExample">Example <span class="optional-tag">(optional)</span></label>
+    <textarea id="scExample" placeholder="A real example"></textarea>
+
+    <label for="scNotes">Notes <span class="optional-tag">(optional)</span></label>
+    <textarea id="scNotes" placeholder="Gotchas, aliases, limitations"></textarea>
+
+    <label for="scAuthor">Your name</label>
+    <input type="text" id="scAuthor" placeholder="e.g. Sara">
+
+    <div class="panel-actions">
+      <button class="btn-ghost" id="cancelAddShortcut">Cancel</button>
+      <button class="btn-primary" id="saveAddShortcut">Save shortcut</button>
     </div>
   </div>
 </div>
@@ -963,6 +1018,7 @@ function enterShortcutsMode(){
   document.querySelectorAll('.platform-submenu-item').forEach(b => b.classList.remove('active'));
   const claudeShortcutsBtn = document.getElementById('claudeShortcutsBtn');
   if(claudeShortcutsBtn) claudeShortcutsBtn.classList.add('active');
+  updateAddShortcutVisibility();
   render();
 }
 
@@ -975,7 +1031,13 @@ function exitShortcutsMode(){
   shortcutsBanner.style.display = 'none';
   sideNav.querySelectorAll('.cat-tab').forEach(t => t.classList.toggle('active', t.dataset.cat === activeCat));
   document.querySelectorAll('.platform-submenu-item').forEach(b => b.classList.remove('active'));
+  updateAddShortcutVisibility();
   render();
+}
+
+function updateAddShortcutVisibility(){
+  const btn = document.getElementById('openAddShortcut');
+  if(btn) btn.style.display = (isAdmin && viewMode === 'shortcuts') ? '' : 'none';
 }
 
 document.querySelectorAll('.platform-expand-btn').forEach(btn => {
@@ -1528,6 +1590,83 @@ closePanel.addEventListener('click', closeOverlay);
 cancelAdd.addEventListener('click', closeOverlay);
 overlay.addEventListener('click', (ev) => { if(ev.target === overlay) closeOverlay(); });
 
+// ---------- Add a Claude shortcut ----------
+const shortcutOverlay = document.getElementById('shortcutOverlay');
+const openAddShortcutBtn = document.getElementById('openAddShortcut');
+const closeShortcutPanel = document.getElementById('closeShortcutPanel');
+const cancelAddShortcut = document.getElementById('cancelAddShortcut');
+const saveAddShortcut = document.getElementById('saveAddShortcut');
+
+function openShortcutOverlay(){
+  shortcutOverlay.classList.add('open');
+  document.getElementById('scCategory').value = activeCat;
+  let savedAuthor = '';
+  try{ savedAuthor = localStorage.getItem(AUTHOR_KEY) || ''; }catch(e){}
+  document.getElementById('scAuthor').value = savedAuthor;
+}
+function closeShortcutOverlay(){
+  shortcutOverlay.classList.remove('open');
+  document.getElementById('scTitle').value = '';
+  document.getElementById('scKey').value = '';
+  document.getElementById('scPurpose').value = '';
+  document.getElementById('scHowToUse').value = '';
+  document.getElementById('scExample').value = '';
+  document.getElementById('scNotes').value = '';
+  document.getElementById('errScTitle').style.display = 'none';
+  document.getElementById('errScKey').style.display = 'none';
+  document.getElementById('errScPurpose').style.display = 'none';
+}
+
+openAddShortcutBtn.addEventListener('click', openShortcutOverlay);
+closeShortcutPanel.addEventListener('click', closeShortcutOverlay);
+cancelAddShortcut.addEventListener('click', closeShortcutOverlay);
+shortcutOverlay.addEventListener('click', (ev) => { if(ev.target === shortcutOverlay) closeShortcutOverlay(); });
+
+saveAddShortcut.addEventListener('click', async () => {
+  const title = document.getElementById('scTitle').value.trim();
+  const shortcutKey = document.getElementById('scKey').value.trim();
+  const purpose = document.getElementById('scPurpose').value.trim();
+  const author = document.getElementById('scAuthor').value.trim();
+
+  let valid = true;
+  if(!title){ document.getElementById('errScTitle').style.display = 'block'; valid = false; }
+  else { document.getElementById('errScTitle').style.display = 'none'; }
+  if(!shortcutKey){ document.getElementById('errScKey').style.display = 'block'; valid = false; }
+  else { document.getElementById('errScKey').style.display = 'none'; }
+  if(!purpose){ document.getElementById('errScPurpose').style.display = 'block'; valid = false; }
+  else { document.getElementById('errScPurpose').style.display = 'none'; }
+  if(!valid) return;
+
+  saveAddShortcut.disabled = true;
+  saveAddShortcut.textContent = 'Saving…';
+
+  const entryData = {
+    category: document.getElementById('scCategory').value,
+    title, shortcutKey, purpose,
+    howToUse: document.getElementById('scHowToUse').value.trim(),
+    example: document.getElementById('scExample').value.trim(),
+    notes: document.getElementById('scNotes').value.trim(),
+    link: '', tag: '', body: '', department: '',
+    platform: 'claude',
+    author: author || 'Anonymous',
+    suggestedBy: '',
+    createdAt: Date.now()
+  };
+
+  try{
+    await entriesCollection.add(entryData);
+    if(author){
+      try{ localStorage.setItem(AUTHOR_KEY, author); }catch(e){}
+    }
+    closeShortcutOverlay();
+  }catch(e){
+    alert('Could not save that shortcut. Check your connection and try again.');
+  }finally{
+    saveAddShortcut.disabled = false;
+    saveAddShortcut.textContent = 'Save shortcut';
+  }
+});
+
 saveAdd.addEventListener('click', async () => {
   const title = document.getElementById('fTitle').value.trim();
   const body = document.getElementById('fBody').value.trim();
@@ -1617,6 +1756,7 @@ function applyAdminUI(){
   openAdd.style.display = isAdmin ? '' : 'none';
   openReview.style.display = isAdmin ? '' : 'none';
   adminToggle.textContent = isAdmin ? 'Admin ✓' : 'Admin';
+  updateAddShortcutVisibility();
   render();  // re-render cards so Remove buttons show/hide
 }
 
