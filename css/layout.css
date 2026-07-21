@@ -1,0 +1,46 @@
+  /* ---------- Header ---------- */
+  header{
+    position:relative;
+    padding:14px 28px;
+    background:var(--oryx-blue);
+    border-bottom:1px solid rgba(255,255,255,0.12);
+  }
+  .header-inner{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:20px;
+    flex-wrap:wrap;
+  }
+  .brand-row{display:flex;align-items:center;gap:14px;}
+  .logo-img{height:52px;width:auto;display:block;}
+  .brand-mark{display:flex;flex-direction:column;gap:2px;}
+  h1{
+    font-family:var(--font-display);font-weight:700;font-size:20px;
+    letter-spacing:0.01em;color:var(--white);margin:0;
+  }
+  .tagline{
+    font-size:11px;letter-spacing:0.12em;text-transform:uppercase;
+    font-family:var(--font-display);font-weight:500;color:var(--silver);
+  }
+  .header-actions{display:flex;align-items:center;gap:18px;flex-wrap:wrap;}
+  .stat-pill{
+    font-family:var(--font-display);font-weight:600;font-size:11.5px;letter-spacing:0.06em;
+    text-transform:uppercase;color:var(--silver);
+  }
+  .stat-pill strong{color:var(--white);font-size:13px;}
+  .sync-status{
+    font-size:11px;letter-spacing:0.08em;text-transform:uppercase;
+    font-family:var(--font-display);font-weight:500;color:var(--silver);
+    display:flex;align-items:center;gap:6px;
+  }
+  .sync-status::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--silver);}
+  .sync-status.live::before{background:#4caf7d;}
+  .sync-status.error::before{background:#c15656;}
+
+  .view{display:none;}
+  .view.active{display:block;}
+
+  /* ---------- Hub layout ---------- */
+  .hub-body{display:flex;align-items:flex-start;}
+  .hub-main{flex:1;min-width:0;padding:24px 32px 64px;}

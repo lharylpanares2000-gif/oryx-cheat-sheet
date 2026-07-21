@@ -1,0 +1,3 @@
+applyAdminUI();
+listenForEntries();
+listenForSuggestions();

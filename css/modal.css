@@ -1,0 +1,94 @@
+  /* ---------- Skill detail full page ---------- */
+  .skill-page{
+    position:fixed;inset:0;z-index:70;background:var(--white);
+    overflow-y:auto;display:none;
+  }
+  .skill-page.open{display:block;}
+  .skill-hero{
+    position:relative;overflow:hidden;background:var(--oryx-blue);color:var(--white);
+    padding:26px 48px 46px;
+  }
+  .skill-hero .panel-sweep{width:440px;height:280px;top:-50px;right:-50px;opacity:0.3;}
+  .skill-hero-inner{position:relative;z-index:1;max-width:860px;margin:0 auto;}
+  .skill-back{
+    display:inline-flex;align-items:center;gap:8px;background:none;border:none;cursor:pointer;
+    color:rgba(255,255,255,0.8);font-family:var(--font-display);font-weight:600;font-size:12px;
+    letter-spacing:0.08em;text-transform:uppercase;padding:0;margin-bottom:28px;
+  }
+  .skill-back:hover{color:var(--white);}
+  .skill-eyebrow{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:14px;}
+  .skill-eyebrow .tag{
+    font-family:var(--font-display);font-weight:600;font-size:11px;letter-spacing:0.14em;
+    text-transform:uppercase;color:rgba(255,255,255,0.7);
+  }
+  .skill-eyebrow .tag.platform{
+    background:rgba(255,255,255,0.12);color:var(--white);padding:4px 11px;
+    border-radius:20px;letter-spacing:0.08em;display:inline-flex;align-items:center;gap:7px;
+  }
+  .skill-eyebrow .tag.platform .platform-dot{width:8px;height:8px;}
+  .skill-hero h1{
+    font-family:var(--font-display);font-weight:700;font-size:32px;line-height:1.25;
+    color:var(--white);margin:0;border:none;padding:0;display:block;width:auto;
+  }
+  .skill-wrap{max-width:860px;margin:0 auto;padding:44px 48px 64px;}
+  .skill-thumb{max-width:540px;margin:0 0 32px;}
+  .skill-download-bar{
+    margin-top:42px;padding:34px 28px;background:var(--panel);border:1px solid var(--line);
+    border-radius:12px;text-align:center;
+  }
+  .skill-download-bar h3{
+    font-family:var(--font-display);font-weight:700;font-size:18px;color:var(--oryx-blue);margin:0 0 6px;
+  }
+  .skill-download-bar p{font-size:13.5px;color:#555;margin:0 0 22px;line-height:1.55;}
+  .download-btn{
+    display:inline-flex;align-items:center;gap:10px;background:var(--oryx-blue);color:var(--white);
+    border:none;cursor:pointer;font-family:var(--font-display);font-weight:700;font-size:14px;
+    letter-spacing:0.04em;text-transform:uppercase;padding:16px 34px;border-radius:8px;
+    transition:background 0.15s ease;
+  }
+  .download-btn:hover{background:var(--oryx-blue-tint);}
+  .download-btn svg{width:18px;height:18px;fill:var(--white);}
+  /* ---------- Overlay / detail + add panel ---------- */
+  .overlay{
+    position:fixed;inset:0;background:rgba(2,42,58,0.35);display:none;
+    align-items:flex-start;justify-content:flex-end;z-index:50;
+  }
+  .overlay.open{display:flex;}
+  .panel{
+    background:var(--white);width:460px;max-width:100%;height:100%;overflow-y:auto;
+    padding:32px;border-left:1px solid var(--line);
+  }
+  .panel h2{font-family:var(--font-display);font-size:20px;color:var(--oryx-blue);margin:0 0 4px;}
+  .panel .sub{
+    font-size:12px;color:var(--silver);margin:0 0 24px;text-transform:uppercase;
+    letter-spacing:0.08em;font-family:var(--font-display);
+  }
+
+  /* ---------- Detail panel header (skill page hero reuses .panel-sweep) ---------- */
+  .panel-header{
+    position:relative;overflow:hidden;background:var(--oryx-blue);color:var(--white);
+    margin:0 0 28px;padding:44px 32px 28px;
+  }
+  .panel-sweep{position:absolute;top:-30px;right:-30px;width:240px;height:150px;pointer-events:none;opacity:0.4;}
+  .panel-eyebrow{
+    position:relative;z-index:1;display:block;font-family:var(--font-display);font-weight:600;
+    font-size:11px;letter-spacing:0.2em;text-transform:uppercase;color:rgba(255,255,255,0.6);
+  }
+  .panel-header h2{
+    position:relative;z-index:1;font-family:var(--font-display);font-weight:700;font-size:27px;
+    line-height:1.28;color:var(--white);margin:10px 0 0;letter-spacing:0.005em;
+  }
+  .panel-body{padding:0 32px 32px;}
+  .close-x-light{color:rgba(255,255,255,0.65);}
+  .close-x-light:hover{color:var(--white);}
+
+  .detail-block{margin-bottom:22px;padding-bottom:22px;border-bottom:1px solid var(--line-soft);}
+  .detail-block:last-child{margin-bottom:0;padding-bottom:0;border-bottom:none;}
+  .detail-label{
+    font-family:var(--font-display);font-weight:600;font-size:10.5px;letter-spacing:0.14em;
+    text-transform:uppercase;color:var(--oryx-blue);margin-bottom:8px;padding-left:13px;position:relative;
+  }
+  .detail-label::before{content:'';position:absolute;left:0;top:4px;width:6px;height:6px;background:var(--oryx-blue);}
+  .detail-value{font-size:14.5px;line-height:1.7;color:var(--black);white-space:pre-wrap;}
+  .detail-value.mono{font-family:monospace;background:var(--panel);padding:10px 12px;font-size:13px;}
+  .detail-tip{background:var(--panel);border-left:3px solid var(--oryx-blue);padding:14px 16px;font-size:13.5px;line-height:1.65;}

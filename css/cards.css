@@ -1,0 +1,75 @@
+  /* ---------- Grid ---------- */
+  .count-row{
+    font-size:12px;letter-spacing:0.08em;text-transform:uppercase;color:var(--silver);
+    font-family:var(--font-display);font-weight:500;margin:0 0 18px;
+    padding-bottom:14px;border-bottom:1px solid var(--line);
+  }
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:20px;}
+  .pagination{display:flex;align-items:center;justify-content:center;gap:14px;margin-top:28px;}
+  .pagination-btn{
+    font-family:var(--font-display);font-weight:600;font-size:12px;letter-spacing:0.06em;text-transform:uppercase;
+    border:1px solid var(--line);background:var(--white);color:var(--oryx-blue);border-radius:8px;
+    padding:9px 16px;cursor:pointer;
+  }
+  .pagination-btn:hover:not(:disabled){background:var(--panel);}
+  .pagination-btn:disabled{opacity:0.4;cursor:not-allowed;}
+  .pagination-status{font-size:12.5px;color:var(--silver);font-family:var(--font-display);font-weight:500;}
+  .card{
+    position:relative;background:var(--white);border:1px solid var(--line);padding:20px;
+    display:flex;flex-direction:column;gap:10px;transition:border-color 0.15s ease;cursor:pointer;
+  }
+  .card:hover{border-color:var(--oryx-blue);}
+  .card::before, .card::after{
+    content:'';position:absolute;width:14px;height:14px;border:1px solid transparent;transition:border-color 0.15s ease;
+  }
+  .card::before{top:-1px;left:-1px;border-top-color:var(--line);border-left-color:var(--line);}
+  .card::after{top:-1px;right:-1px;border-top-color:var(--line);border-right-color:var(--line);}
+  .card:hover::before{border-top-color:var(--oryx-blue);border-left-color:var(--oryx-blue);}
+  .card:hover::after{border-top-color:var(--oryx-blue);border-right-color:var(--oryx-blue);}
+  .card-tag{font-family:var(--font-display);font-weight:600;font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--oryx-blue);}
+  .card-title{font-family:var(--font-display);font-weight:600;font-size:16px;color:var(--black);margin:0;line-height:1.3;}
+  .card-body{font-size:13.5px;line-height:1.6;color:#333;white-space:pre-wrap;margin:0;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden;}
+  .card-link{font-size:12.5px;word-break:break-all;}
+  .link-thumb-wrap{position:relative;width:100%;aspect-ratio:16/9;background:var(--panel);overflow:hidden;}
+  .link-thumb{width:100%;height:100%;object-fit:cover;display:block;}
+  .link-thumb-badge-wrap{
+    width:100%;aspect-ratio:16/9;display:flex;align-items:center;justify-content:center;
+    background:var(--oryx-blue);
+  }
+  .link-thumb-badge{
+    font-family:var(--font-display);font-weight:700;font-size:12px;letter-spacing:0.08em;
+    text-transform:uppercase;color:var(--white);
+  }
+  .card-placeholder{
+    width:100%;height:64px;display:flex;align-items:center;justify-content:center;
+    background:var(--oryx-blue);
+  }
+  .card-thumb-link{display:block;cursor:pointer;}
+  .card-placeholder svg{width:26px;height:26px;fill:none;stroke:rgba(255,255,255,0.7);stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;}
+  .link-play-icon{
+    position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+    width:44px;height:44px;border-radius:50%;background:rgba(2,42,58,0.75);
+    display:flex;align-items:center;justify-content:center;pointer-events:none;
+  }
+  .link-play-icon svg{width:16px;height:16px;fill:var(--white);}
+  .card-footer{
+    margin-top:auto;padding-top:10px;border-top:1px solid var(--line-soft);
+    display:flex;justify-content:space-between;align-items:center;font-size:11px;color:var(--silver);gap:8px;flex-wrap:wrap;
+  }
+  .card-badge{
+    font-family:var(--font-display);font-weight:600;font-size:10px;letter-spacing:0.05em;
+    text-transform:uppercase;background:var(--panel);color:var(--oryx-blue);padding:4px 8px;
+  }
+  .card-del{
+    background:none;border:none;color:var(--silver);cursor:pointer;font-size:11px;letter-spacing:0.05em;
+    text-transform:uppercase;font-family:var(--font-display);padding:0;
+  }
+  .card-del:hover{color:#8a2b2b;}
+  .empty{padding:60px 20px;text-align:center;color:var(--silver);font-size:14px;grid-column:1/-1;border:1px dashed var(--line);}
+
+  .add-btn{
+    font-family:var(--font-display);font-weight:600;font-size:13px;letter-spacing:0.06em;
+    text-transform:uppercase;background:var(--oryx-blue);color:var(--white);border:none;
+    padding:14px 22px;cursor:pointer;display:inline-flex;align-items:center;gap:8px;transition:background 0.15s ease;
+  }
+  .add-btn:hover{background:var(--oryx-blue-tint);}
