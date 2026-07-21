@@ -1006,8 +1006,9 @@ function render(){
   countRow.textContent = filtered.length + (filtered.length === 1 ? ' entry' : ' entries');
 
   document.getElementById('totalCount').textContent = entries.length;
-  const counts = { all: entries.length, skills: 0, commands: 0, agents: 0, mcps: 0, plugins: 0, discoveries: 0 };
-  entries.forEach(e => { if(counts[e.category] !== undefined) counts[e.category]++; });
+  const platformFilteredEntries = activePlatform === 'all' ? entries : entries.filter(e => (e.platform || 'claude') === activePlatform);
+  const counts = { all: platformFilteredEntries.length, skills: 0, commands: 0, agents: 0, mcps: 0, plugins: 0, discoveries: 0 };
+  platformFilteredEntries.forEach(e => { if(counts[e.category] !== undefined) counts[e.category]++; });
   Object.keys(counts).forEach(cat => {
     const el = sideNav.querySelector(`[data-count-for="${cat}"]`);
     if(el) el.textContent = counts[cat];
