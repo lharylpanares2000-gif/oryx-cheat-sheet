@@ -257,7 +257,7 @@ function render(){
         ${linkHtml}
         <div class="card-footer">
           <span>${escapeHtml(e.author || 'Anonymous')} · ${dateStr}</span>
-          ${isAdmin ? `<button class="card-del" data-id="${e.id}">Remove</button>` : ''}
+          ${isAdmin ? `<span class="card-admin-actions"><button class="card-edit" data-id="${e.id}">Edit</button><button class="card-del" data-id="${e.id}">Remove</button></span>` : ''}
         </div>
       </div>
     `;
@@ -274,6 +274,14 @@ function render(){
 
   grid.querySelectorAll('.card-thumb-link').forEach(link => {
     link.addEventListener('click', (ev) => ev.stopPropagation());
+  });
+
+  grid.querySelectorAll('.card-edit').forEach(btn => {
+    btn.addEventListener('click', (ev) => {
+      ev.stopPropagation();
+      const entry = entries.find(e => e.id === btn.dataset.id);
+      if(entry) openEditEntry(entry);
+    });
   });
 
   grid.querySelectorAll('.card-del').forEach(btn => {

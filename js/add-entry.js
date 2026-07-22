@@ -6,7 +6,13 @@ const saveAdd = document.getElementById('saveAdd');
 const fCategory = document.getElementById('fCategory');
 const simpleFields = document.getElementById('simpleFields');
 const skillFields = document.getElementById('skillFields');
+const overlayHeading = document.querySelector('#overlay h2');
 const SKILL_FIELD_IDS = ['fDepartment','fPurpose','fSamplePrompt','fBestFor','fExampleOutput','fNotes','fHowToAccess','fOryxTip'];
+const SKILL_FIELD_KEYS = {
+  fDepartment:'department', fPurpose:'purpose', fSamplePrompt:'samplePrompt', fBestFor:'bestFor',
+  fExampleOutput:'exampleOutput', fNotes:'notes', fHowToAccess:'howToAccess', fOryxTip:'oryxTip'
+};
+let editingEntryId = null;
 
 function toggleEntryFields(){
   const isRich = isRichCategory(fCategory.value);
@@ -111,11 +117,7 @@ document.getElementById('aiFill').addEventListener('click', () => {
   if(data.title) document.getElementById('fTitle').value = data.title;
   if(data.body != null) document.getElementById('fBody').value = data.body;
 
-  const map = {
-    fDepartment:'department', fPurpose:'purpose', fSamplePrompt:'samplePrompt', fBestFor:'bestFor',
-    fExampleOutput:'exampleOutput', fNotes:'notes', fHowToAccess:'howToAccess', fOryxTip:'oryxTip'
-  };
-  Object.keys(map).forEach(id => { if(data[map[id]] != null) document.getElementById(id).value = data[map[id]]; });
+  Object.keys(SKILL_FIELD_KEYS).forEach(id => { if(data[SKILL_FIELD_KEYS[id]] != null) document.getElementById(id).value = data[SKILL_FIELD_KEYS[id]]; });
 
   toggleEntryFields();
   setAiStatus('✓ Form filled. Review the fields below, then Save entry.');
@@ -123,6 +125,9 @@ document.getElementById('aiFill').addEventListener('click', () => {
 
 function openOverlay(){
   overlay.classList.add('open');
+  editingEntryId = null;
+  overlayHeading.textContent = 'Add an entry';
+  saveAdd.textContent = 'Save entry';
   let savedAuthor = '';
   try{ savedAuthor = localStorage.getItem(AUTHOR_KEY) || ''; }catch(e){}
   document.getElementById('fAuthor').value = savedAuthor;
@@ -130,6 +135,9 @@ function openOverlay(){
 }
 function closeOverlay(){
   overlay.classList.remove('open');
+  editingEntryId = null;
+  overlayHeading.textContent = 'Add an entry';
+  saveAdd.textContent = 'Save entry';
   document.getElementById('fPlatform').value = 'claude';
   document.getElementById('fCategory').value = 'skills';
   toggleEntryFields();
@@ -146,6 +154,32 @@ function closeOverlay(){
   setAiStatus('');
   currentSuggestionId = null;
   currentSuggestedBy = '';
+}
+
+function openEditEntry(entry){
+  overlay.classList.add('open');
+  editingEntryId = entry.id;
+  overlayHeading.textContent = 'Edit entry';
+  saveAdd.textContent = 'Save changes';
+
+  document.getElementById('fPlatform').value = entry.platform || 'claude';
+  fCategory.value = entry.category;
+  toggleEntryFields();
+
+  document.getElementById('fTitle').value = entry.title || '';
+  document.getElementById('fBody').value = entry.body || '';
+  document.getElementById('fTag').value = entry.tag || '';
+  document.getElementById('fLink').value = entry.link || '';
+  document.getElementById('fAuthor').value = entry.author || '';
+
+  SKILL_FIELD_IDS.forEach(id => { document.getElementById(id).value = entry[SKILL_FIELD_KEYS[id]] || ''; });
+
+  aiInput.value = '';
+  aiResult.value = '';
+  setAiStatus('');
+  document.getElementById('errTitle').style.display = 'none';
+  document.getElementById('errBody').style.display = 'none';
+  document.getElementById('errPurpose').style.display = 'none';
 }
 
 openAdd.addEventListener('click', openOverlay);
@@ -183,6 +217,7 @@ saveAdd.addEventListener('click', async () => {
   }
   if(!valid) return;
 
+  const isEditing = !!editingEntryId;
   saveAdd.disabled = true;
   saveAdd.textContent = 'Saving…';
 
@@ -192,7 +227,6 @@ saveAdd.addEventListener('click', async () => {
     platform: document.getElementById('fPlatform').value,
     author: author || 'Anonymous',
     suggestedBy: currentSuggestedBy || '',
-    createdAt: Date.now(),
     body: isSkill ? '' : body,
     department: isSkill ? skillValues.fDepartment : '',
     purpose: isSkill ? skillValues.fPurpose : '',
@@ -203,9 +237,14 @@ saveAdd.addEventListener('click', async () => {
     howToAccess: isSkill ? skillValues.fHowToAccess : '',
     oryxTip: isSkill ? skillValues.fOryxTip : ''
   };
+  if(!isEditing) entryData.createdAt = Date.now();
 
   try{
-    await entriesCollection.add(entryData);
+    if(isEditing){
+      await entriesCollection.doc(editingEntryId).update(entryData);
+    }else{
+      await entriesCollection.add(entryData);
+    }
     if(author){
       try{ localStorage.setItem(AUTHOR_KEY, author); }catch(e){}
     }
@@ -215,9 +254,9 @@ saveAdd.addEventListener('click', async () => {
     }
     closeOverlay();
   }catch(e){
-    alert('Could not save that entry. Check your connection and try again.');
+    alert(isEditing ? 'Could not save your changes. Check your connection and try again.' : 'Could not save that entry. Check your connection and try again.');
   }finally{
     saveAdd.disabled = false;
-    saveAdd.textContent = 'Save entry';
+    saveAdd.textContent = isEditing ? 'Save changes' : 'Save entry';
   }
 });
