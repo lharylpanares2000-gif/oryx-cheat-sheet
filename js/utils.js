@@ -29,6 +29,11 @@ function optionalBlock(label, value, valueClass){
   return detailBlock(label, value, valueClass);
 }
 
+function faviconUrlForLink(link){
+  try{ return `https://www.google.com/s2/favicons?domain=${encodeURIComponent(new URL(link).hostname)}&sz=64`; }
+  catch(e){ return null; }
+}
+
 function platformMeta(platform){
   const map = {
     claude:  { label: 'Claude',        color: '#F5A623' },

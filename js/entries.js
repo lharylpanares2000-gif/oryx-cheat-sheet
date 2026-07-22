@@ -80,10 +80,9 @@ function linkThumbHtml(link){
 }
 
 function faviconBadgeHtml(link, category){
-  let domain;
-  try{ domain = new URL(link).hostname; }catch(e){ return ''; }
+  const faviconUrl = faviconUrlForLink(link);
+  if(!faviconUrl) return '';
   const fallbackPath = CATEGORY_ICON_PATHS[category] || '';
-  const faviconUrl = `https://www.google.com/s2/favicons?domain=${encodeURIComponent(domain)}&sz=64`;
   return `<div class="card-placeholder">
     <img class="card-favicon-img" src="${faviconUrl}" alt="" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='';">
     <svg viewBox="0 0 24 24" style="display:none">${fallbackPath}</svg>

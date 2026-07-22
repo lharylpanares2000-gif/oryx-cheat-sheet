@@ -30,6 +30,11 @@
     font-family:var(--font-display);font-weight:700;font-size:32px;line-height:1.25;
     color:var(--white);margin:0;border:none;padding:0;display:block;width:auto;
   }
+  .skill-title-row{display:flex;align-items:center;gap:14px;}
+  .skill-title-logo{
+    width:40px;height:40px;object-fit:contain;border-radius:9px;
+    background:var(--white);padding:5px;flex-shrink:0;
+  }
   .skill-wrap{max-width:860px;margin:0 auto;padding:44px 48px 64px;}
   .skill-thumb{max-width:540px;margin:0 0 32px;}
   .skill-download-bar{

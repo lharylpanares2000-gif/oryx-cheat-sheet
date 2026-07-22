@@ -8,6 +8,10 @@ function openNoteDetail(entry){
   const catLabel = CATEGORY_LABELS[entry.category] || entry.category;
   const thumbInner = entry.link ? linkThumbHtml(entry.link) : '';
   const thumbHtml = entry.link ? `<a class="card-thumb-link" href="${escapeHtml(entry.link)}" target="_blank" rel="noopener">${thumbInner}</a>` : '';
+  const titleFaviconUrl = entry.category === 'other-tools' && entry.link ? faviconUrlForLink(entry.link) : null;
+  const titleLogoHtml = titleFaviconUrl
+    ? `<img class="skill-title-logo" src="${titleFaviconUrl}" alt="" onerror="this.style.display='none';">`
+    : '';
   const linkHtml = entry.link
     ? `<a href="${escapeHtml(entry.link)}" target="_blank" rel="noopener">${escapeHtml(entry.link)}</a>`
     : 'Not provided';
@@ -21,7 +25,7 @@ function openNoteDetail(entry){
           <span class="tag">${escapeHtml(catLabel)}</span>
           <span class="tag platform"><span class="platform-dot" style="background:${pm.color}"></span>${escapeHtml(pm.label)}</span>
         </div>
-        <h1>${escapeHtml(entry.title)}</h1>
+        <div class="skill-title-row">${titleLogoHtml}<h1>${escapeHtml(entry.title)}</h1></div>
       </div>
     </div>
     <div class="skill-wrap">
