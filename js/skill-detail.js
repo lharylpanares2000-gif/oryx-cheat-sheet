@@ -52,8 +52,9 @@ function openNoteDetail(entry){
       + optionalBlock('Example', entry.example, 'detail-value mono')
       + optionalBlock('Notes', entry.notes);
   } else {
+    const isLinkResource = entry.category === 'discoveries' || entry.category === 'other-tools';
     html += optionalBlock('Details', entry.body)
-      + detailBlock('How to Download', DOWNLOAD_HELP_TEXT);
+      + detailBlock(isLinkResource ? 'How to Use' : 'How to Download', isLinkResource ? USE_LINK_HELP_TEXT : DOWNLOAD_HELP_TEXT);
   }
 
   html += detailBlockHtml('Link', linkHtml)

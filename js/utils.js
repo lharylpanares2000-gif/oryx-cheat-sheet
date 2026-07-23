@@ -44,6 +44,7 @@ function platformMeta(platform){
 }
 
 const DOWNLOAD_HELP_TEXT = 'Click the "Download Skill (.md)" button at the bottom of this page. The file saves to your device as a Markdown (.md) file you can open, edit, or share with the team.';
+const USE_LINK_HELP_TEXT = 'Open the link above to visit this tool.';
 const INSTALL_HELP_TEXT = 'Open Claude (claude.ai or the desktop app) and start a new chat, or open your team Project. Paste the sample prompt above to run it. To reuse it as a saved skill, upload the downloaded .md file into your Claude Project knowledge, or paste its contents into the conversation.';
 
 function slugify(str){
